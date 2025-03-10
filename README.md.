@@ -1,0 +1,98 @@
+# Logstash Configuration for Security Log Ingestion
+#For creating the Logstash Configuration file for ingestion of the Security Log Data
+with Logstash Input Plugin, Logstash Output Plugin, and Logstash Filter Plugins to transform the data
+from the Security Log Data we have to install and work on some basic command and tools:
+1. sudo apt-get update
+2. sudo apt-get install -y openjdk-8-jdk
+# For logstash setup and run we required Java Development Kit (jdk) becuase logstash build on java. logstash is part of ELK.
+3. then again we have to update with command sudo apt-get update
+4. sudo apt-get -y install nginx
+# nginx is used to enhace the performance and work on loarge amount of log data  and flexibility in acting as a web server, reverse proxy, and load balancer.
+5. wget -q0- https://artifacts.elastic.co/GPG-KEY-elasticsearch I sudo apt-key add -
+6.echo "deb https://artifacts.elastic.co/packages/7. .x/apt stable main" sudo tee letc/apt/sources. list.
+7. sudo apt update
+8. sudo apt install elasticsearch
+9. sudo apt install kibana   
+10. sudo apt install logstash   
+11. sudo apt install filebeat
+
+
+
+# Few Basic Command used for this assiegnment to create the logstash file and creating the git repository:
+1. # to create the log file :   sudo nano /var/log/security_log.log
+2. # Added some sample log data inside the file: example:  [2025-03-10 12:30:00] - WARNING - Unauthorized login attempt from 192.168.1.10
+                                                          [2025-03-10 12:45:10] - ERROR - Multiple failed login attempts detected
+
+3. Logstash Confiogring file : sudo nano /etc/logstash/conf.d/security_log.conf and then in nano file add input file path and filter grok and then output
+4. start runing Logstash with This Configuration : sudo logstash -f /etc/logstash/conf.d/security_log.conf
+5. verify the security log file: cat /var/log/security_log.log
+# git repository
+6. cd ~/Desktop
+7. created new directory with command : mkdir logstash-project && cd logstash-project and Initialize a Git repository with command git init
+
+8. Copied Logstash Configuration File: sudo cp -r /etc/logstash/conf.d/ ./logstash-config/ and then copyied the log file : sudo cp /var/log/security_log.log ./logs/
+after that checked the logs: ls logs/
+9. Added Files into Git: git add .
+git commit -m "Initial commit - Added Logstash config and logs"
+then pushed into git: git remote add origin https://github.com/your-username/logstash-security-logs.git
+and updated all into git : git push -u origin main
+# Next step is to send the logs into elasticsearch
+9. created Logs Directory: mkdir logs
+10. copied the Security Log File: sudo cp /var/log/security_log.log ./logs/
+and added into git : git add .
+then commit the changes : git commit -m "Initial commit - Added Logstash config and logs"
+then set my username and email and pushed all the command into github and also generated the Personal Access Token (PAT).
+then updated the Logstash Configuration to Output Logs to Elasticsearch: nano ~/Desktop/logstash-project/logstash-config/security_log.conf
+Next for visualiazation I started the kibana and cheked the kibana logs and then checked the Filebeat Data if its Reaching the Elasticsearch then run this command: "GET filebeat-*/_search?size=5
+" into the Kibana’s Dev Tools and then start Checking Filebeat in kibana Dashboard  by selecting this as an filebeat-* index pattern and monitor the log data from Filebeat.
+Recorded and added everything in git repository.
+
+
+## Overview
+This repository contains Logstash configuration files designed to ingest security logs, process them, and send the structured data to Elasticsearch. Kibana is used for visualization and analysis of the ingested logs.
+
+## How Data is Ingested and Output from Logstash
+Logstash follows a pipeline-based approach with three main stages:
+
+1. **Input Stage:**  
+   - Logstash collects log data from various sources, such as system logs, application logs, or network logs.
+   - The `input` plugin used in this configuration can be `file`, `syslog`, `beats`, or `stdin`, depending on the data source.
+
+2. **Processing (Filter) Stage:**  
+   - Data is parsed, enriched, or transformed using filters like `grok`, `date`, `mutate`, or `json`.
+   - This step ensures the raw log data is structured properly before storage.
+
+3. **Output Stage:**  
+   - The processed logs are sent to Elasticsearch for indexing.
+   - Other output destinations can include files (`output { file { path => "logs/output.log" } }`) or stdout for debugging.
+
+## Example Logstash Configuration File
+```plaintext
+input {
+  file {
+    path => "/var/log/syslog"
+    start_position => "beginning"
+  }
+}
+
+filter {
+  grok {
+    match => { "message" => "%{SYSLOGTIMESTAMP:timestamp} %{SYSLOGHOST:hostname} %{WORD:process}: %{GREEDYDATA:log_message}" }
+  }
+}
+
+output {
+  elasticsearch {
+    hosts => ["http://localhost:9200"]
+    index => "security-logs"
+  }
+}
+
+# this was for json output file 
+output {
+  elasticsearch {
+    hosts => ["http://localhost:9200"]
+    index => "security-logs"
+    codec => "json"  # Ensures data is sent in JSON format
+  }
+}
