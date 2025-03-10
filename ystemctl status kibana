@@ -1,0 +1,13 @@
+[0;1;32m●[0m kibana.service - Kibana
+     Loaded: loaded (]8;;file://anchal/etc/systemd/system/kibana.service/etc/systemd/system/kibana.service]8;;; [0;1;38;5;185mdisabled[0m; preset: [0;1;32menabled[0m)
+     Active: [0;1;32mactive (running)[0m since Mon 2025-03-10 12:30:12 IST; 8min ago
+       Docs: ]8;;https://www.elastic.cohttps://www.elastic.co]8;;
+   Main PID: 28513 (node)
+      Tasks: 11 (limit: 4558)
+     Memory: 179.7M (peak: 238.1M)
+        CPU: 21.442s
+     CGroup: /system.slice/kibana.service
+             └─[0;38;5;245m28513 /usr/share/kibana/bin/../node/bin/node /usr/share/kibana/bin/../src/cli/dist --logging.dest=/var/log/kibana/kibana.log --pid.file=/run/kibana/kibana.pid "--deprecation.skip_deprecated_settings[0]=logging.dest"[0m
+
+Mar 10 12:30:12 anchal systemd[1]: Started kibana.service - Kibana.
+Mar 10 12:30:12 anchal kibana[28513]: Kibana is currently running with legacy OpenSSL providers enabled! For details and instructions on how to disable see https://www.elastic.co/guide/en/kibana/7.17/production.html#openssl-legacy-provider
